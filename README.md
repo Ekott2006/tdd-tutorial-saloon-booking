@@ -13,7 +13,7 @@ This project implements a barber booking application using ASP.NET and Test-Driv
    Use Git to clone this repository:
 
    ```bash
-   git clone https://your-repository-url.git
+   git clone https://github.com/Ekott2006/tdd-tutorial-saloon-booking
    ```
 
 3. **Restoring Dependencies:**
