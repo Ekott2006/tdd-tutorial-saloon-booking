@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Test.Unit;
 
-public class DatabaseHelperTests: IDisposable
+public class DatabaseHelperTestsBase: IDisposable
 {
     private readonly SqliteConnection _connection;
     protected DataContext Context { get; set; }
 
-    protected DatabaseHelperTests()
+    protected DatabaseHelperTestsBase()
     {
         _connection = new SqliteConnection("Filename=:memory:");
         _connection.Open();

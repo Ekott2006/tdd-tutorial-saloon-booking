@@ -1,3 +1,4 @@
+using Domain.DTOs;
 using Domain.Model;
 using Domain.Repository;
 using Domain.Test.Unit.ModelFaker;
@@ -13,7 +14,7 @@ public class SalonServiceRepositoryTests : DatabaseHelperTestsBase
         SalonServiceRepository repository = new(Context);
 
         // Act
-        IEnumerable<SalonService> result = await repository.Get();
+        IEnumerable<SalonServiceResponse> result = await repository.Get();
 
         // Assert
         Assert.Empty(result);
@@ -26,12 +27,12 @@ public class SalonServiceRepositoryTests : DatabaseHelperTestsBase
         SalonServiceRepository repository = new(Context);
         const int activeServices = 2;
         List<SalonService> services =
-            [..new SalonServiceFaker(true).Generate(activeServices), ..new SalonServiceFaker(false).Generate(10)];
+            [.. new SalonServiceFaker(true).Generate(activeServices), .. new SalonServiceFaker(false).Generate(10)];
         await Context.SalonServices.AddRangeAsync(services);
         await Context.SaveChangesAsync();
 
         // Act
-        IEnumerable<SalonService> result = await repository.Get();
+        IEnumerable<SalonServiceResponse> result = await repository.Get();
 
         // Assert
         Assert.Equal(activeServices, result.Count());

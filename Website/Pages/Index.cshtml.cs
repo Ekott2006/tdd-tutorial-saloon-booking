@@ -1,19 +1,15 @@
-using Microsoft.AspNetCore.Mvc;
+using Domain.DTOs;
+using Domain.Repository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Website.Pages;
 
-public class IndexModel : PageModel
+public class IndexModel(ILogger<IndexModel> logger, SalonServiceRepository repository) : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
+    public IEnumerable<SalonServiceResponse> Services { get; set; }
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public async void OnGet()
     {
-        _logger = logger;
-    }
-
-    public void OnGet()
-    {
-
+        Services = await repository.Get();
     }
 }

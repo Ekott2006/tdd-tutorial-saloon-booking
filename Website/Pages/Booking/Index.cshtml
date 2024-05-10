@@ -1,0 +1,128 @@
+﻿@page
+@model IndexModel
+@{
+}
+
+<h1>Booking</h1>
+
+<form class="row g-3" method="post">
+    <div class="col-md-4">
+        <label asp-for="Request.EmployeeId" class="form-label"></label>
+        <select asp-for="Request.EmployeeId" asp-items="Model.Employees" id="employee-select" style="display: block" class="form-select">
+            <option value="">[Any Employee]</option>
+        </select>
+        <span asp-validation-for="Request.EmployeeId" class="invalid-feedback"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Request.FirstName" class="form-label"></label>
+        <input asp-for="Request.FirstName" type="text" class="form-control"/>
+        <span asp-validation-for="Request.FirstName" class="invalid-feedback"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Request.LastName" class="form-label"></label>
+        <input asp-for="Request.LastName" type="text" class="form-control"/>
+        <span asp-validation-for="Request.LastName" class="invalid-feedback"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Request.StartDate" class="form-label"></label>
+        <input asp-for="Request.StartDate" type="date" class="form-control" id="start-date"/>
+        <span asp-validation-for="Request.StartDate" class="invalid-feedback"></span>
+    </div>
+    <div class="col-md-8">
+        <label> Selected Service: </label>
+        <hr style="margin: 0" />
+        <p class="service-text"> <em style="margin-right: auto"> @Model.SalonService.Name </em> @Model.SalonService.Duration.Minutes min | $@Model.SalonService.Price </p>
+        <hr style="margin: 0"/>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Request.StartTime" class="form-label"></label>
+        <select asp-for="Request.StartTime" id="start-time-select" style="display: block" class="form-select">
+            <option value="">Time</option>
+        </select>
+            <span asp-validation-for="Request.StartTime" class="invalid-feedback"></span>
+    </div>
+
+    <div class="col-8" style="margin-top: 40px">
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign in</button>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script>        
+        const employeesSelect = document.querySelector("#employee-select");
+        const startDatesInput = document.querySelector("#start-date");
+        const startTimeSelect = document.querySelector("#start-time-select");
+
+        
+        const today = new Date();
+        startDatesInput.value = formatDate(today);
+        startDatesInput.min = formatDate(today)
+        startDatesInput.max = formatDate(addDays(today, 7))
+
+        updateStartTime()
+        employeesSelect.onchange = updateStartTime;
+
+        startDatesInput.onchange = () => {
+            const selectedDate = new Date(startDatesInput.value);
+            const filteredData = dateData.filter(filterByDate(selectedDate));
+            updateStartTimeOptions(filteredData);
+        };
+
+
+        function updateStartTime () {
+            const employee =
+                employeesSelect.options[employeesSelect.options.selectedIndex].value;
+
+            fetch(`/booking?id=@Model.Id&handler=ValidTimes&employeeId=${employee}`)
+                .then((response) => response.json())
+                .then((data) => {
+                dateData = data;
+                updateStartTimeOptions(dateData);
+                });
+        }
+
+        function filterByDate(startDate) {
+            return (dateObject) => {
+                const date = new Date(dateObject.StartDateTime);
+                return (
+                date.getDate() === startDate.getDate() &&
+                date.getMonth() === startDate.getMonth() &&
+                date.getFullYear() === startDate.getFullYear()
+                );
+            };
+        }
+
+        function addDays(date, days) {
+            const newDate = new Date(date);
+            newDate.setDate(newDate.getDate() + days);
+            return newDate;
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear().toString().padStart(4, "0");
+            const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+            const day = String(date.getDate()).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatTime(date) {
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+            const seconds = String(date.getSeconds()).padStart(2, "0");
+
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        function updateStartTimeOptions(data) {
+            startTimeSelect.options.length = 0;
+            data.forEach((item) => {
+                const formattedTime = formatTime(new Date(item.StartDateTime));
+                startTimeSelect.add(
+                    new Option(formattedTime, formattedTime)
+                );
+            });
+        }
+    </script>
+}

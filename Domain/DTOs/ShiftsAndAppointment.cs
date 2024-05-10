@@ -1,5 +1,5 @@
 using Domain.Model;
 
-namespace Contract;
+namespace Domain.DTOs;
 
 public record ShiftsAndAppointment(IEnumerable<Period> Shifts, IEnumerable<Period> Appointments);

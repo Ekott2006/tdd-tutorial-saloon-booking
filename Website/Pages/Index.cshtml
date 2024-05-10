@@ -1,10 +1,35 @@
 ﻿@page
+@using Domain.DTOs
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h1>Our Services </h1> 
+<p> Please select a service to see available slots </p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Service
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (SalonServiceResponse? item in Model.Services) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                $@Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                <a asp-page="./Booking/Index" asp-route-id="@item.Id" style="text-decoration: none;">Select</a> 
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

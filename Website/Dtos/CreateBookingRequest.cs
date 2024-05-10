@@ -1,14 +1,13 @@
-
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Website.Model;
+namespace Website.Dtos;
 
 public class CreateBookingRequest
 {
-    [DisplayName("Select Employee")] public Guid? EmployeeId { get; set; }
-    [Required] public DateOnly StartDate { get; set; }
-    [Required] public TimeOnly StartTime { get; set; }
+    [DisplayName("Select Employee: ")] public Guid? EmployeeId { get; set; }
+    [DisplayName("Start Date: ")] [Required] public DateOnly StartDate { get; set; }
+    [DisplayName("Start Time: ")] [Required] public TimeOnly StartTime { get; set; }
 
     [Required]
     [DisplayName("First name: ")]

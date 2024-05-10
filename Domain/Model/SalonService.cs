@@ -1,8 +1,8 @@
 namespace Domain.Model;
 
-public class HairdressingService
+public class SalonService
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Name { get; set; }
     public double Price { get; set; }
     public TimeSpan Duration { get; set; }

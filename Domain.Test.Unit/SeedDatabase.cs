@@ -1,9 +1,9 @@
-using Domain.Data;
+﻿using Domain.Data;
 using Domain.Model;
 using Domain.Test.Unit.ModelFaker;
 using Microsoft.EntityFrameworkCore;
 
-namespace WebApi;
+namespace Domain.Test.Unit;
 
 public class SeedDatabase(DataContext context)
 {

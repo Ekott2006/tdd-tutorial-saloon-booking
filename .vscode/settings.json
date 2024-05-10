@@ -1,0 +1,10 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "database": "${workspaceFolder:MyApplicationBooking}/WebApi/my_application_booking.db",
+      "name": "My Booking WebApi DB"
+    }
+  ]
+}

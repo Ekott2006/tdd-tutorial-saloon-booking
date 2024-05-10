@@ -14,8 +14,8 @@ public class GetEmployeeTimeServiceTests : DatabaseHelperTestsBase
     public async Task GetEmployeeTime_NoShift_Empty()
     {
         // Arrange
-        EmployeeRepository employeeRepository = new(Context);
-        GetEmployeeTimeService employeeTimeService = new(employeeRepository);
+        EmployeeHelper employeeHelper = new(new ShiftRepository(Context), new AppointmentRepository(Context));
+        GetEmployeeTimeService employeeTimeService = new(employeeHelper);
 
         // Act
         IEnumerable<Period> result = await employeeTimeService.GetEmployeeTime(new TimeSpan(1, 0, 0));
@@ -30,27 +30,39 @@ public class GetEmployeeTimeServiceTests : DatabaseHelperTestsBase
     public async Task GetEmployeeTime_ExampleInTheBook_List()
     {
         // Arrange
-        EmployeeRepository employeeRepository = new(Context);
-        GetEmployeeTimeService employeeTimeService = new(employeeRepository);
+        EmployeeHelper employeeHelper = new(new ShiftRepository(Context), new AppointmentRepository(Context));
+        GetEmployeeTimeService employeeTimeService = new(employeeHelper);
+        TimeSpan duration = new(0, 30, 0);
 
         DateTime dateTime = DateTime.Today.AddDays(1).AddHours(9);
+        List<Period> expectedResult =
+        [
+            new Period(dateTime, dateTime + duration),
+            new Period(dateTime.AddMinutes(5), dateTime.AddMinutes(5) + duration),
+            new Period(dateTime.AddHours(1).AddMinutes(40), dateTime.AddHours(1).AddMinutes(40) + duration),
+        ];
         await SeedDb([new Period(dateTime, dateTime.AddHours(2).AddMinutes(10))],
             [new Period(dateTime.AddMinutes(40), dateTime.AddHours(1).AddMinutes(35))]);
 
         // Act
-        IEnumerable<Period> result = await employeeTimeService.GetEmployeeTime(new TimeSpan(0, 30, 0));
+        IEnumerable<Period> result = await employeeTimeService.GetEmployeeTime(duration);
 
         // Assert
-        Assert.Equal(3, result.Count());
-        // TODO: Add the time periods
+        Assert.Equal(expectedResult.Count(), result.Count());
+        for (int i = 0; i < result.Count(); i++)
+        {
+            Assert.Equal(expectedResult[i].StartDateTime, result.ToList()[i].StartDateTime);
+            Assert.Equal(expectedResult[i].EndDateTime, result.ToList()[i].EndDateTime);
+        }
+        
     }
 
     [Fact]
     public async Task GetEmployeeTime_ComplexExample_List()
     {
         // Arrange
-        EmployeeRepository employeeRepository = new(Context);
-        GetEmployeeTimeService employeeTimeService = new(employeeRepository);
+        EmployeeHelper employeeHelper = new(new ShiftRepository(Context), new AppointmentRepository(Context));
+        GetEmployeeTimeService employeeTimeService = new(employeeHelper);
         DateTime dateTime = DateTime.Today;
 
         // Employee 1
@@ -74,8 +86,8 @@ public class GetEmployeeTimeServiceTests : DatabaseHelperTestsBase
     public async Task GetEmployeeTime_ComplexExampleMatchesIndividualEmployee_List(int employeeNum, int expectedResult)
     {
         // Arrange
-        EmployeeRepository employeeRepository = new(Context);
-        GetEmployeeTimeService employeeTimeService = new(employeeRepository);
+        EmployeeHelper employeeHelper = new(new ShiftRepository(Context), new AppointmentRepository(Context));
+        GetEmployeeTimeService employeeTimeService = new(employeeHelper);
         DateTime dateTime = DateTime.Today;
         Guid id = await SeedEmployee(dateTime, employeeNum);
 
@@ -145,4 +157,6 @@ public class GetEmployeeTimeServiceTests : DatabaseHelperTestsBase
                 new Period(dateTime.AddDays(2).AddHours(14), dateTime.AddDays(2).AddHours(16)),
             ]
         );
+    
+    
 }
